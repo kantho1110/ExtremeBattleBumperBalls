@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2D Platformer Game</title>
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #87CEEB;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const gravity = 0.15;
+    const friction = 0.3;
+    const pistonForce = 7;
+    const platforms = [];
+
+    class Ball {
+        constructor(x, y, radius) {
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.color = 'red';
+            this.dx = 0;
+            this.dy = 0;
+            this.angle = 0;
+            this.isOnGround = false;
+            this.pistonActive = false;
+            this.pistonLength = 0;
+        }
+
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.angle);
+            ctx.beginPath();
+            ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.closePath();
+            
+            // Draw a simple line on the ball to show rotation
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(this.radius, 0);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.closePath();
+
+            // Draw piston rod if active
+            if (this.pistonLength > 0) {
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(this.radius + this.pistonLength, 0);
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 5;
+                ctx.stroke();
+                ctx.closePath();
+            }
+            
+            ctx.restore();
+        }
+
+        update() {
+            // Apply gravity
+            this.dy += gravity;
+
+            // Update position
+            this.x += this.dx;
+            this.y += this.dy;
+
+            // Apply rotation
+            if (this.isOnGround) {
+                this.angle += this.dx / this.radius;
+            }
+
+            // Check collision with screen borders
+            if (this.x - this.radius < 0) {
+                this.x = this.radius;
+                this.dx = 0;
+            }
+            if (this.x + this.radius > canvas.width) {
+                this.x = canvas.width - this.radius;
+                this.dx = 0;
+            }
+            if (this.y - this.radius < 0) {
+                this.y = this.radius;
+                this.dy = 0;
+            }
+            if (this.y + this.radius > canvas.height) {
+                this.y = canvas.height - this.radius;
+                this.dy = 0;
+                this.isOnGround = true;
+            } else {
+                this.isOnGround = false;
+            }
+
+            // Check collision with platforms
+            platforms.forEach(platform => {
+                if (this.y + this.radius > platform.y &&
+                    this.y - this.radius < platform.y + platform.height &&
+                    this.x + this.radius > platform.x &&
+                    this.x - this.radius < platform.x + platform.width) {
+                    
+                    // Prevent the ball from going through the base of the platform
+                    if (this.dy > 0 && this.y < platform.y) {
+                        this.dy = 0;
+                        this.y = platform.y - this.radius;
+                        this.isOnGround = true;
+                    } else if (this.dy < 0 && this.y > platform.y + platform.height) {
+                        this.dy = 0;
+                        this.y = platform.y + platform.height + this.radius;
+                    }
+                }
+            });
+
+            // Apply friction
+            if (this.isOnGround) {
+                this.dx *= friction;
+            }
+
+            // Activate piston if on the ground
+            if (this.pistonActive && this.isOnGround) {
+                this.pistonLength = 20;
+                this.pistonActive = false;
+                const forceX = Math.cos(this.angle) * -pistonForce; // Propulsion force in the X direction
+                const forceY = Math.sin(this.angle) * -pistonForce; // Propulsion force in the Y direction
+                this.dx += forceX;
+                this.dy += forceY;
+            }
+
+            // Gradually retract piston rod
+            if (this.pistonLength > 0) {
+                this.pistonLength -= 1;
+            }
+
+            this.draw();
+        }
+    }
+
+    class Platform {
+        constructor(x, y, width, height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = '#654321';
+        }
+
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+
+    class Boss {
+        constructor(x, y, width, height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = 'purple';
+            this.dx = 2;
+        }
+
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+
+        update() {
+            this.x += this.dx;
+
+            // Bounce off the edges
+            if (this.x < 0 || this.x + this.width > canvas.width) {
+                this.dx *= -1;
+            }
+
+            this.draw();
+        }
+    }
+
+    // Create platforms
+    platforms.push(new Platform(100, 500, 200, 10));
+    platforms.push(new Platform(400, 400, 200, 10));
+    platforms.push(new Platform(200, 300, 200, 10));
+
+    const ball = new Ball(50, canvas.height - 30, 20);
+    const boss = new Boss(300, 50, 100, 50);
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw platforms
+        platforms.forEach(platform => platform.draw());
+
+        // Update ball
+        ball.update();
+
+        // Update boss
+        boss.update();
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+            ball.dx = 5;
+        } else if (e.key === 'ArrowLeft') {
+            ball.dx = -5;
+        } else if (e.key === ' ' && ball.isOnGround) {
+            ball.pistonActive = true;
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            ball.dx = 0;
+        }
+    });
+
+    gameLoop();
+</script>
+</body>
+</html>
