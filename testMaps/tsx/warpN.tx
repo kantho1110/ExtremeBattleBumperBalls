@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="warp" width="48" height="16">
+  <properties>
+   <property name="dest" value="s"/>
+   <property name="map" value="testRoom2"/>
+   <property name="name" value="n"/>
+  </properties>
+ </object>
+</template>

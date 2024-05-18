@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="24" tileheight="24" infinite="0" nextlayerid="6" nextobjectid="26">
+ <tileset firstgid="1" name="tileset" tilewidth="24" tileheight="24" tilecount="9" columns="2">
+  <grid orientation="orthogonal" width="16" height="16"/>
+  <image source="tileset.png" width="48" height="48"/>
+  <tile id="2">
+   <properties>
+    <property name="nez:isOneWayPlatform" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="nez:isSlope" type="bool" value="true"/>
+    <property name="nez:slopeTopLeft" type="int" value="0"/>
+    <property name="nez:slopeTopRight" type="int" value="23"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="nez:isSlope" type="bool" value="true"/>
+    <property name="nez:slopeTopLeft" type="int" value="0"/>
+    <property name="nez:slopeTopRight" type="int" value="15"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer id="5" name="main" width="20" height="12">
+  <data encoding="csv">
+1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,1,1,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,1,1,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,1,1,
+1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,2,1,1,1,
+1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,2,1,1,1,
+1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,2,1,1,1,
+1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,2,2,2,1,
+1,1,1,1,1,1,1,4,0,0,0,0,0,0,0,0,0,0,0,1,
+1,1,1,1,1,1,1,1,4,0,0,0,0,0,0,0,0,0,0,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <objectgroup id="2" name="objects">
+  <object id="25" name="spawn" gid="2" x="64" y="32" width="16" height="16"/>
+ </objectgroup>
+</map>

@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://ex0gleid7hyj"]
+
+[ext_resource type="PackedScene" uid="uid://bm66hwt6gyudb" path="res://testMaps/testRoom1-2.tscn" id="2_q83l1"]
+[ext_resource type="PackedScene" uid="uid://ci66uu8qidnmp" path="res://player.tscn" id="2_tb0of"]
+
+[node name="Game" type="Node2D"]
+
+[node name="player" parent="." instance=ExtResource("2_tb0of")]
+position = Vector2(24719, 17315)
+
+[node name="Camera2D" type="Camera2D" parent="player"]
+zoom = Vector2(4, 4)
+
+[node name="TileMap" type="TileMap" parent="."]
+format = 2
+
+[node name="testRoom1" parent="TileMap" instance=ExtResource("2_q83l1")]
+position = Vector2(24421.3, 17225.3)
